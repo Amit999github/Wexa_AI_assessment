@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+/* Visible keyboard focus everywhere, styled to match the accent rather than
+   the browser default outline. */
+:focus-visible {
+  outline: 2px solid #2f6fed;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* The recurring "relationship trace" signature: a thin horizontal line with
+   a monospace relationship-type label centered on it, used everywhere the
+   UI expresses a graph edge (mentor cards, path finder, network view). */
+.trace-line {
+  position: relative;
+  height: 1px;
+  background: #c9d2dc;
+}
+
+.trace-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #edf1f5;
+  padding: 0 8px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #2f6fed;
+  white-space: nowrap;
+}
+
+@keyframes trace-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.trace-line--animated {
+  transform-origin: left;
+  animation: trace-draw 0.5s ease-out forwards;
+}
