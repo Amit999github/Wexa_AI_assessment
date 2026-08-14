@@ -1,4 +1,4 @@
-import neo4j from 'neo4j-driver';
+import neo4j from "neo4j-driver";
 
 /** Neo4j node -> plain object the frontend can consume directly. */
 export function serializeNode(node) {
@@ -21,6 +21,26 @@ export function serializeRelationship(rel) {
   };
 }
 
+/** Graph-specific node serialization: preserves internal Neo4j identity as _id
+ *  so edges (which reference internal ids) can wire back to nodes even when
+ *  the node has a domain property called `id`. */
+export function serializeGraphNode(node) {
+  return {
+    _id: neo4j.integer.toString(node.identity),
+    labels: node.labels,
+    ...node.properties,
+  };
+}
+
+export function serializeGraphRelationship(rel) {
+  return {
+    id: neo4j.integer.toString(rel.identity),
+    type: rel.type,
+    source: neo4j.integer.toString(rel.start),
+    target: neo4j.integer.toString(rel.end),
+    ...rel.properties,
+  };
+}
 /**
  * Serializes a Cypher `path` value (as returned by e.g. shortestPath()) into
  * { nodes, relationships } arrays of plain objects.
@@ -30,6 +50,8 @@ export function serializePath(path) {
     nodes: path.segments.length
       ? [path.start, ...path.segments.map((s) => s.end)].map(serializeNode)
       : [serializeNode(path.start)],
-    relationships: path.segments.map((s) => serializeRelationship(s.relationship)),
+    relationships: path.segments.map((s) =>
+      serializeRelationship(s.relationship),
+    ),
   };
 }

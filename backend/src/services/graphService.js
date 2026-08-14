@@ -1,6 +1,11 @@
-import { getSession } from '../config/db.js';
-import { serializeNode, serializeRelationship, serializePath } from '../utils/serialize.js';
-
+import { getSession } from "../config/db.js";
+import {
+  serializeNode,
+  serializeRelationship,
+  serializePath,
+  serializeGraphNode,
+  serializeGraphRelationship,
+} from "../utils/serialize.js";
 /**
  * Multi-hop traversal (3 relationship hops): a developer wants to learn a
  * skill; find people they've already worked with on a project who happen to
@@ -19,8 +24,8 @@ export async function findMentorsForSkill(devId) {
          RETURN DISTINCT peer.id AS peerId, peer.name AS peerName, target.name AS skillName,
                 proj.name AS sharedProject
          ORDER BY target.name, peer.name`,
-        { devId }
-      )
+        { devId },
+      ),
     );
     return result.records.map((r) => r.toObject());
   } finally {
@@ -48,8 +53,8 @@ export async function findRecommendedPeers(devId) {
          RETURN DISTINCT peer.id AS peerId, peer.name AS peerName,
                 collect(DISTINCT shared.name) AS sharedSkills
          ORDER BY size(sharedSkills) DESC, peer.name`,
-        { devId }
-      )
+        { devId },
+      ),
     );
     return result.records.map((r) => r.toObject());
   } finally {
@@ -72,11 +77,11 @@ export async function findShortestConnectionPath(fromId, toId) {
         `MATCH (a:Developer {id: $fromId}), (b:Developer {id: $toId})
          MATCH path = shortestPath((a)-[:WORKED_ON|HAS_SKILL*..8]-(b))
          RETURN path`,
-        { fromId, toId }
-      )
+        { fromId, toId },
+      ),
     );
     if (result.records.length === 0) return null;
-    return serializePath(result.records[0].get('path'));
+    return serializePath(result.records[0].get("path"));
   } finally {
     await session.close();
   }
@@ -100,8 +105,8 @@ export async function getDeveloperEgoGraph(devId) {
          OPTIONAL MATCH (proj)<-[peerWo:WORKED_ON]-(peer:Developer)
          WHERE peer.id <> $devId
          RETURN me, hs, skill, wl, wantSkill, wo, proj, peerWo, peer`,
-        { devId }
-      )
+        { devId },
+      ),
     );
 
     const nodes = new Map();
@@ -109,25 +114,25 @@ export async function getDeveloperEgoGraph(devId) {
 
     const addNode = (node) => {
       if (!node) return;
-      const serialized = serializeNode(node);
-      nodes.set(serialized.id, serialized);
+      const serialized = serializeGraphNode(node);
+      nodes.set(serialized._id, serialized);
     };
     const addEdge = (rel) => {
       if (!rel) return;
-      const serialized = serializeRelationship(rel);
+      const serialized = serializeGraphRelationship(rel);
       edges.set(serialized.id, serialized);
     };
 
     for (const record of result.records) {
-      addNode(record.get('me'));
-      addNode(record.get('skill'));
-      addNode(record.get('wantSkill'));
-      addNode(record.get('proj'));
-      addNode(record.get('peer'));
-      addEdge(record.get('hs'));
-      addEdge(record.get('wl'));
-      addEdge(record.get('wo'));
-      addEdge(record.get('peerWo'));
+      addNode(record.get("me"));
+      addNode(record.get("skill"));
+      addNode(record.get("wantSkill"));
+      addNode(record.get("proj"));
+      addNode(record.get("peer"));
+      addEdge(record.get("hs"));
+      addEdge(record.get("wl"));
+      addEdge(record.get("wo"));
+      addEdge(record.get("peerWo"));
     }
 
     return { nodes: [...nodes.values()], edges: [...edges.values()] };

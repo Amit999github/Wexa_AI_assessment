@@ -1,21 +1,37 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Compass } from 'lucide-react';
-import { api } from '../api/client.js';
-import Avatar from '../components/Avatar.jsx';
-import SkillChip from '../components/SkillChip.jsx';
-import Panel from '../components/Panel.jsx';
-import TraceLine from '../components/TraceLine.jsx';
-import { LoadingState, EmptyState, ErrorState } from '../components/StateViews.jsx';
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { ArrowLeft, Compass } from "lucide-react";
+import { api } from "../api/client.js";
+import Avatar from "../components/Avatar.jsx";
+import SkillChip from "../components/SkillChip.jsx";
+import Panel from "../components/Panel.jsx";
+import TraceLine from "../components/TraceLine.jsx";
+import NetworkGraph from "../components/NetworkGraph.jsx";
+import {
+  LoadingState,
+  EmptyState,
+  ErrorState,
+} from "../components/StateViews.jsx";
 
 function useAsync(fn, deps) {
-  const [state, setState] = useState({ status: 'loading', data: null, error: null });
+  const [state, setState] = useState({
+    status: "loading",
+    data: null,
+    error: null,
+  });
   useEffect(() => {
     let cancelled = false;
-    setState({ status: 'loading', data: null, error: null });
+    setState({ status: "loading", data: null, error: null });
     fn()
-      .then((data) => !cancelled && setState({ status: 'ready', data, error: null }))
-      .catch((error) => !cancelled && setState({ status: 'error', data: null, error: error.message }));
+      .then(
+        (data) =>
+          !cancelled && setState({ status: "ready", data, error: null }),
+      )
+      .catch(
+        (error) =>
+          !cancelled &&
+          setState({ status: "error", data: null, error: error.message }),
+      );
     return () => {
       cancelled = true;
     };
@@ -29,8 +45,9 @@ export default function DeveloperProfilePage() {
   const profile = useAsync(() => api.getDeveloperProfile(id), [id]);
   const mentors = useAsync(() => api.getMentors(id), [id]);
   const recommendations = useAsync(() => api.getRecommendations(id), [id]);
+  const graph = useAsync(() => api.getDeveloperGraph(id), [id]);
 
-  if (profile.status === 'loading') {
+  if (profile.status === "loading") {
     return (
       <div className="mx-auto max-w-5xl px-6 py-10">
         <LoadingState label="Loading profile…" />
@@ -38,7 +55,7 @@ export default function DeveloperProfilePage() {
     );
   }
 
-  if (profile.status === 'error') {
+  if (profile.status === "error") {
     return (
       <div className="mx-auto max-w-5xl px-6 py-10">
         <ErrorState message={profile.error} />
@@ -50,7 +67,10 @@ export default function DeveloperProfilePage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <Link to="/" className="mb-6 inline-flex items-center gap-1.5 text-sm text-ink/55 hover:text-circuit">
+      <Link
+        to="/"
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-ink/55 hover:text-circuit"
+      >
         <ArrowLeft size={14} /> Back to Explore
       </Link>
 
@@ -62,6 +82,17 @@ export default function DeveloperProfilePage() {
         </div>
       </div>
 
+      <div className="mb-8">
+        <Panel eyebrow="EGO_NETWORK" title="One-hop neighbourhood">
+          <NetworkGraph
+            centerId={dev.id}
+            data={graph.data}
+            status={graph.status}
+            error={graph.error}
+          />
+        </Panel>
+      </div>
+
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <Panel eyebrow="HAS_SKILL" title="Skills">
           {dev.skills.length === 0 ? (
@@ -69,7 +100,12 @@ export default function DeveloperProfilePage() {
           ) : (
             <div className="flex flex-wrap gap-2">
               {dev.skills.map((s) => (
-                <SkillChip key={s.name} name={s.name} level={s.level} />
+                <SkillChip
+                  key={s.name}
+                  name={s.name}
+                  level={s.level}
+                  to={`/skills/${encodeURIComponent(s.name)}`}
+                />
               ))}
             </div>
           )}
@@ -81,21 +117,36 @@ export default function DeveloperProfilePage() {
           ) : (
             <div className="flex flex-wrap gap-2">
               {dev.wantsToLearn.map((s) => (
-                <SkillChip key={s.name} name={s.name} category={s.category} />
+                <SkillChip
+                  key={s.name}
+                  name={s.name}
+                  category={s.category}
+                  to={`/skills/${encodeURIComponent(s.name)}`}
+                />
               ))}
             </div>
           )}
         </Panel>
 
-        <Panel eyebrow="WORKED_ON" title="Projects" action={undefined}>
+        <Panel eyebrow="WORKED_ON" title="Projects">
           {dev.projects.length === 0 ? (
             <EmptyState title="No projects recorded yet" />
           ) : (
             <ul className="space-y-2">
               {dev.projects.map((p) => (
-                <li key={p.id} className="flex items-baseline justify-between text-sm">
-                  <span className="font-medium text-ink">{p.name}</span>
-                  <span className="font-mono text-[11px] text-ink/45">{p.role}</span>
+                <li
+                  key={p.id}
+                  className="flex items-baseline justify-between text-sm"
+                >
+                  <Link
+                    to={`/projects/${p.id}`}
+                    className="font-medium text-ink hover:text-circuit hover:underline"
+                  >
+                    {p.name}
+                  </Link>
+                  <span className="font-mono text-[11px] text-ink/45">
+                    {p.role}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -106,22 +157,31 @@ export default function DeveloperProfilePage() {
           eyebrow="3-hop traversal"
           title="Mentors for your learning goals"
         >
-          {mentors.status === 'loading' && <LoadingState label="Tracing paths…" />}
-          {mentors.status === 'error' && <ErrorState message={mentors.error} />}
-          {mentors.status === 'ready' && mentors.data.length === 0 && (
+          {mentors.status === "loading" && (
+            <LoadingState label="Tracing paths…" />
+          )}
+          {mentors.status === "error" && <ErrorState message={mentors.error} />}
+          {mentors.status === "ready" && mentors.data.length === 0 && (
             <EmptyState
               title="No mentor path found yet"
               hint="No one you've worked with directly has a skill you want to learn."
             />
           )}
-          {mentors.status === 'ready' && mentors.data.length > 0 && (
+          {mentors.status === "ready" && mentors.data.length > 0 && (
             <ul className="space-y-3">
               {mentors.data.map((m, i) => (
-                <li key={`${m.peerId}-${m.skillName}-${i}`} className="flex items-center gap-3">
+                <li
+                  key={`${m.peerId}-${m.skillName}-${i}`}
+                  className="flex items-center gap-3"
+                >
                   <Avatar name={m.peerName} size={32} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-ink">{m.peerName}</p>
-                    <p className="truncate text-[11px] text-ink/45">via {m.sharedProject}</p>
+                    <p className="truncate text-sm font-medium text-ink">
+                      {m.peerName}
+                    </p>
+                    <p className="truncate text-[11px] text-ink/45">
+                      via {m.sharedProject}
+                    </p>
                   </div>
                   <TraceLine label={m.skillName} />
                 </li>
@@ -132,34 +192,51 @@ export default function DeveloperProfilePage() {
       </div>
 
       <div className="mt-5">
-        <Panel eyebrow="Shared HAS_SKILL, no WORKED_ON" title="People you should meet">
-          {recommendations.status === 'loading' && <LoadingState label="Scanning the graph…" />}
-          {recommendations.status === 'error' && <ErrorState message={recommendations.error} />}
-          {recommendations.status === 'ready' && recommendations.data.length === 0 && (
-            <EmptyState
-              title="No new connections surfaced"
-              hint="Everyone who shares a skill with you has already worked with you."
-            />
+        <Panel
+          eyebrow="Shared HAS_SKILL, no WORKED_ON"
+          title="People you should meet"
+        >
+          {recommendations.status === "loading" && (
+            <LoadingState label="Scanning the graph…" />
           )}
-          {recommendations.status === 'ready' && recommendations.data.length > 0 && (
-            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {recommendations.data.map((r) => (
-                <li key={r.peerId} className="flex items-center gap-3 rounded-panel border border-line p-3">
-                  <Avatar name={r.peerName} size={32} />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-ink">{r.peerName}</p>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {r.sharedSkills.map((s) => (
-                        <span key={s} className="font-mono text-[10px] uppercase text-signal">
-                          {s}
-                        </span>
-                      ))}
+          {recommendations.status === "error" && (
+            <ErrorState message={recommendations.error} />
+          )}
+          {recommendations.status === "ready" &&
+            recommendations.data.length === 0 && (
+              <EmptyState
+                title="No new connections surfaced"
+                hint="Everyone who shares a skill with you has already worked with you."
+              />
+            )}
+          {recommendations.status === "ready" &&
+            recommendations.data.length > 0 && (
+              <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {recommendations.data.map((r) => (
+                  <li
+                    key={r.peerId}
+                    className="flex items-center gap-3 rounded-panel border border-line p-3"
+                  >
+                    <Avatar name={r.peerName} size={32} />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-ink">
+                        {r.peerName}
+                      </p>
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {r.sharedSkills.map((s) => (
+                          <span
+                            key={s}
+                            className="font-mono text-[10px] uppercase text-signal"
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+                  </li>
+                ))}
+              </ul>
+            )}
         </Panel>
       </div>
 

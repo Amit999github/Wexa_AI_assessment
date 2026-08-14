@@ -1,9 +1,11 @@
-import { NavLink } from 'react-router-dom';
-import { GitBranch } from 'lucide-react';
+import { NavLink } from "react-router-dom";
+import { GitBranch } from "lucide-react";
 
 const linkClass = ({ isActive }) =>
   `px-3 py-2 text-sm font-medium rounded-panel transition-colors ${
-    isActive ? 'bg-circuit-dim text-circuit' : 'text-ink/70 hover:text-ink hover:bg-black/5'
+    isActive
+      ? "bg-circuit-dim text-circuit"
+      : "text-ink/70 hover:text-ink hover:bg-black/5"
   }`;
 
 export default function TopNav() {
@@ -22,6 +24,9 @@ export default function TopNav() {
           </NavLink>
           <NavLink to="/path" className={linkClass}>
             Path Finder
+          </NavLink>
+          <NavLink to="/how-it-works" className={linkClass}>
+            How it works
           </NavLink>
         </nav>
       </div>
