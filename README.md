@@ -4,8 +4,8 @@ A developer skill & mentor-matching application built on **CognoDB**, a managed 
 database that speaks openCypher over Bolt and works with the standard Neo4j drivers.
 Built for the Wexa AI "Build a Graph Database Application" take-home assignment.
 
-**Live demo:** _add your hosted URL here before submission_
-**Screen recording:** _add your video link here before submission_
+**Live demo:** https://wexaaiassessment.netlify.app/  
+**Screen recording:** https://wexa-ai-assessment-4gyn.onrender.com
 
 ---
 
@@ -134,7 +134,6 @@ Wexa_AI_assessment/
 │       └── components/      shared UI (cards, panels, graph view, state views)
 ├── docs/                    screenshots + the original assignment PDF
 ├── README.md                you are here
-└── INTERVIEW_PREP.md        CognoDB/Neo4j deep dive + likely interview questions
 ```
 
 ## Getting started
