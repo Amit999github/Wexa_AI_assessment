@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import Avatar from './Avatar.jsx';
+import { Link } from "react-router-dom";
+import Avatar from "./Avatar.jsx";
 
 export default function DeveloperCard({ developer }) {
   return (
@@ -9,8 +9,12 @@ export default function DeveloperCard({ developer }) {
     >
       <Avatar name={developer.name} size={40} />
       <div className="min-w-0">
-        <p className="font-medium text-ink group-hover:text-circuit">{developer.name}</p>
-        <p className="mt-0.5 text-xs text-ink/55 line-clamp-2">{developer.bio}</p>
+        <p className="font-medium text-ink group-hover:text-circuit">
+          {developer.name}
+        </p>
+        <p className="mt-0.5 text-xs text-ink/55 line-clamp-2">
+          {developer.bio}
+        </p>
       </div>
     </Link>
   );

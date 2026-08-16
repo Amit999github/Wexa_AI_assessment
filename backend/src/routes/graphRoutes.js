@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import * as graphController from '../controllers/graphController.js';
+import { Router } from "express";
+import { getShortestPath } from "../controllers/graphController.js";
 
 const router = Router();
 
 // GET /api/graph/path?from=dev6&to=dev8
-router.get('/path', graphController.getShortestPath);
+router.get("/path", getShortestPath);
 
 export default router;

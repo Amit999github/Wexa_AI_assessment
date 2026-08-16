@@ -1,13 +1,20 @@
-import { Router } from 'express';
-import * as developerController from '../controllers/developerController.js';
-import * as graphController from '../controllers/graphController.js';
+import { Router } from "express";
+import {
+  listDevelopers,
+  getDeveloperProfile,
+} from "../controllers/developerController.js";
+import {
+  getEgoGraph,
+  getMentors,
+  getRecommendations,
+} from "../controllers/graphController.js";
 
 const router = Router();
 
-router.get('/', developerController.listDevelopers);
-router.get('/:id', developerController.getDeveloperProfile);
-router.get('/:id/graph', graphController.getEgoGraph);
-router.get('/:id/mentors', graphController.getMentors);
-router.get('/:id/recommendations', graphController.getRecommendations);
+router.get("/", listDevelopers);
+router.get("/:id", getDeveloperProfile);
+router.get("/:id/graph", getEgoGraph);
+router.get("/:id/mentors", getMentors);
+router.get("/:id/recommendations", getRecommendations);
 
 export default router;

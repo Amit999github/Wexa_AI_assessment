@@ -6,13 +6,11 @@ import {
   serializeGraphNode,
   serializeGraphRelationship,
 } from "../utils/serialize.js";
-/**
- * Multi-hop traversal (3 relationship hops): a developer wants to learn a
- * skill; find people they've already worked with on a project who happen to
- * have that skill. This is the "find a mentor through someone I already
- * know" query — the kind of connection-shaped question a relational schema
- * would need several JOINs and still return in a much less natural shape.
- */
+
+// 3-hop traversal: a developer wants to learn a skill -> find people they've
+// already worked with on a project who happen to have that skill. This is
+// the "find a mentor through someone I already know" query — a relational
+// schema would need several JOINs and still return a much less natural shape.
 export async function findMentorsForSkill(devId) {
   const session = getSession();
   try {
@@ -33,13 +31,9 @@ export async function findMentorsForSkill(devId) {
   }
 }
 
-/**
- * Recommendation query: developers who share a skill with me but I've never
- * worked on a project with. Useful for "people you should meet" — and,
- * unlike the mentor query above, it deliberately excludes anyone already
- * one project-hop away, so it needs a NOT EXISTS subquery over a graph
- * pattern, not just a JOIN.
- */
+// developers who share a skill with me but I've never worked on a project
+// with — deliberately excludes anyone already one project-hop away, so it
+// needs a NOT EXISTS subquery over a graph pattern, not just a JOIN.
 export async function findRecommendedPeers(devId) {
   const session = getSession();
   try {
@@ -62,13 +56,9 @@ export async function findRecommendedPeers(devId) {
   }
 }
 
-/**
- * Variable-length shortest path between two developers, traversing either
- * WORKED_ON or HAS_SKILL edges. This is the query a relational database
- * genuinely struggles with — it's an unbounded-depth graph search
- * (a recursive CTE at best, and still awkward), while Cypher expresses it
- * in one line via shortestPath().
- */
+// variable-length shortest path between two developers over WORKED_ON or
+// HAS_SKILL edges. This is the query a relational DB genuinely struggles
+// with (unbounded-depth search); Cypher does it in one line with shortestPath().
 export async function findShortestConnectionPath(fromId, toId) {
   const session = getSession();
   try {
@@ -87,12 +77,8 @@ export async function findShortestConnectionPath(fromId, toId) {
   }
 }
 
-/**
- * A developer's one-hop neighborhood — their skills, the skills they want,
- * the projects they've worked on, and other developers on those projects.
- * Shaped as { nodes, edges } for a force-directed graph visualization on
- * the frontend rather than as flat rows.
- */
+// a developer's one-hop neighbourhood, shaped as { nodes, edges } for the
+// force-directed graph view on the frontend instead of flat rows
 export async function getDeveloperEgoGraph(devId) {
   const session = getSession();
   try {

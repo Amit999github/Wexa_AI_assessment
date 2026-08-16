@@ -11,10 +11,7 @@ async function start() {
     await verifyConnectivity();
     console.log("[server] Connected to CognoDB.");
   } catch (err) {
-    console.error(
-      "[server] Could not verify CognoDB connectivity at startup:",
-      err.message,
-    );
+    console.error("[server] Could not verify CognoDB connectivity at startup:", err.message);
   }
 
   app.listen(PORT, () => {

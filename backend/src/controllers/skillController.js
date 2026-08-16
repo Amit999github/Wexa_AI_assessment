@@ -1,31 +1,29 @@
-import * as skillService from "../services/skillService.js";
+import {
+  getAllSkills,
+  getDevelopersForSkill,
+  getSkillByName,
+} from "../services/skillService.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import ApiError from "../utils/ApiError.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
-export async function listSkills(req, res, next) {
-  try {
-    res.json(await skillService.getAllSkills());
-  } catch (err) {
-    next(err);
-  }
-}
+// GET /api/skills
+export const listSkills = asyncHandler(async (req, res) => {
+  const skills = await getAllSkills();
+  res.status(200).json(new ApiResponse(200, skills, "Skills fetched"));
+});
 
-export async function listDevelopersForSkill(req, res, next) {
-  try {
-    res.json(await skillService.getDevelopersForSkill(req.params.name));
-  } catch (err) {
-    next(err);
-  }
-}
+// GET /api/skills/:name/developers
+export const listDevelopersForSkill = asyncHandler(async (req, res) => {
+  const developers = await getDevelopersForSkill(req.params.name);
+  res.status(200).json(new ApiResponse(200, developers, "Developers fetched"));
+});
 
-export async function getSkillDetail(req, res, next) {
-  try {
-    const skill = await skillService.getSkillByName(req.params.name);
-    if (!skill) {
-      return res
-        .status(404)
-        .json({ error: `No skill found with name "${req.params.name}"` });
-    }
-    res.json(skill);
-  } catch (err) {
-    next(err);
+// GET /api/skills/:name
+export const getSkillDetail = asyncHandler(async (req, res) => {
+  const skill = await getSkillByName(req.params.name);
+  if (!skill) {
+    throw new ApiError(404, `No skill found with name "${req.params.name}"`);
   }
-}
+  res.status(200).json(new ApiResponse(200, skill, "Skill fetched"));
+});

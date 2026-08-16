@@ -1,6 +1,6 @@
 import neo4j from "neo4j-driver";
 
-/** Neo4j node -> plain object the frontend can consume directly. */
+// neo4j node -> plain object the frontend can consume directly
 export function serializeNode(node) {
   return {
     id: neo4j.integer.toString(node.identity),

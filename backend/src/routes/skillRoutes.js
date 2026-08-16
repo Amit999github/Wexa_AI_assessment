@@ -1,10 +1,10 @@
 import { Router } from "express";
-import * as skillController from "../controllers/skillController.js";
+import { listSkills, listDevelopersForSkill, getSkillDetail } from "../controllers/skillController.js";
 
 const router = Router();
 
-router.get("/", skillController.listSkills);
-router.get("/:name/developers", skillController.listDevelopersForSkill);
-router.get("/:name", skillController.getSkillDetail);
+router.get("/", listSkills);
+router.get("/:name/developers", listDevelopersForSkill);
+router.get("/:name", getSkillDetail);
 
 export default router;

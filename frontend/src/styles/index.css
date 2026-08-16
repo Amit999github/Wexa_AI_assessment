@@ -1,17 +1,36 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* same tokens that used to live in tailwind.config.js — Tailwind v4 reads
+   theme values straight from CSS custom properties instead of a JS config */
+@theme {
+  --color-ink: #16233a;
+  --color-paper: #edf1f5;
+  --color-panel: #ffffff;
+  --color-circuit: #2f6fed;
+  --color-circuit-dim: #dce6fb;
+  --color-signal: #1c9d6c;
+  --color-signal-dim: #dcf3e9;
+  --color-amber: #de9a34;
+  --color-amber-dim: #fbeeda;
+  --color-line: #c9d2dc;
+  --color-danger: #d64545;
+
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius-panel: 6px;
+}
 
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
 }
 
-/* Visible keyboard focus everywhere, styled to match the accent rather than
-   the browser default outline. */
+/* visible keyboard focus everywhere, styled to match the accent rather than
+   the browser default outline */
 :focus-visible {
   outline: 2px solid #2f6fed;
   outline-offset: 2px;
@@ -27,9 +46,9 @@ body {
   }
 }
 
-/* The recurring "relationship trace" signature: a thin horizontal line with
-   a monospace relationship-type label centered on it, used everywhere the
-   UI expresses a graph edge (mentor cards, path finder, network view). */
+/* recurring "relationship trace" signature: a thin horizontal line with a
+   monospace relationship-type label centered on it — used anywhere the UI
+   expresses a graph edge (mentor cards, path finder, network view) */
 .trace-line {
   position: relative;
   height: 1px;
@@ -43,7 +62,7 @@ body {
   transform: translate(-50%, -50%);
   background: #edf1f5;
   padding: 0 8px;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.04em;
   color: #2f6fed;

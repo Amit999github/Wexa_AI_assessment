@@ -1,31 +1,29 @@
-import * as projectService from "../services/projectService.js";
+import {
+  getAllProjects,
+  getProjectTeam as fetchProjectTeam,
+  getProjectById,
+} from "../services/projectService.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import ApiError from "../utils/ApiError.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
-export async function listProjects(req, res, next) {
-  try {
-    res.json(await projectService.getAllProjects());
-  } catch (err) {
-    next(err);
-  }
-}
+// GET /api/projects
+export const listProjects = asyncHandler(async (req, res) => {
+  const projects = await getAllProjects();
+  res.status(200).json(new ApiResponse(200, projects, "Projects fetched"));
+});
 
-export async function getProjectTeam(req, res, next) {
-  try {
-    res.json(await projectService.getProjectTeam(req.params.id));
-  } catch (err) {
-    next(err);
-  }
-}
+// GET /api/projects/:id/team
+export const getProjectTeam = asyncHandler(async (req, res) => {
+  const team = await fetchProjectTeam(req.params.id);
+  res.status(200).json(new ApiResponse(200, team, "Project team fetched"));
+});
 
-export async function getProjectDetail(req, res, next) {
-  try {
-    const project = await projectService.getProjectById(req.params.id);
-    if (!project) {
-      return res
-        .status(404)
-        .json({ error: `No project found with id "${req.params.id}"` });
-    }
-    res.json(project);
-  } catch (err) {
-    next(err);
+// GET /api/projects/:id
+export const getProjectDetail = asyncHandler(async (req, res) => {
+  const project = await getProjectById(req.params.id);
+  if (!project) {
+    throw new ApiError(404, `No project found with id "${req.params.id}"`);
   }
-}
+  res.status(200).json(new ApiResponse(200, project, "Project fetched"));
+});

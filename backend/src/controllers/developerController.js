@@ -1,22 +1,24 @@
-import * as developerService from '../services/developerService.js';
+import {
+  getAllDevelopers,
+  getDeveloperProfile as fetchDeveloperProfile,
+} from "../services/developerService.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import ApiError from "../utils/ApiError.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
-export async function listDevelopers(req, res, next) {
-  try {
-    const developers = await developerService.getAllDevelopers();
-    res.json(developers);
-  } catch (err) {
-    next(err);
-  }
-}
+// GET /api/developers
+export const listDevelopers = asyncHandler(async (req, res) => {
+  const developers = await getAllDevelopers();
+  res.status(200).json(new ApiResponse(200, developers, "Developers fetched"));
+});
 
-export async function getDeveloperProfile(req, res, next) {
-  try {
-    const profile = await developerService.getDeveloperProfile(req.params.id);
-    if (!profile) {
-      return res.status(404).json({ error: `No developer found with id "${req.params.id}"` });
-    }
-    res.json(profile);
-  } catch (err) {
-    next(err);
+// GET /api/developers/:id
+export const getDeveloperProfile = asyncHandler(async (req, res) => {
+  const profile = await fetchDeveloperProfile(req.params.id);
+  if (!profile) {
+    throw new ApiError(404, `No developer found with id "${req.params.id}"`);
   }
-}
+  res
+    .status(200)
+    .json(new ApiResponse(200, profile, "Developer profile fetched"));
+});

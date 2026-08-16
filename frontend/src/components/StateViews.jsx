@@ -1,6 +1,6 @@
-import { AlertTriangle, Inbox, Loader2 } from 'lucide-react';
+import { AlertTriangle, Inbox, Loader2 } from "lucide-react";
 
-export function LoadingState({ label = 'Loading…' }) {
+export function LoadingState({ label = "Loading…" }) {
   return (
     <div className="flex items-center gap-2 py-8 justify-center text-ink/50 text-sm">
       <Loader2 size={16} className="animate-spin" />

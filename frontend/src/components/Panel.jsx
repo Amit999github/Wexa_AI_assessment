@@ -4,7 +4,9 @@ export default function Panel({ eyebrow, title, action, children }) {
       <div className="mb-4 flex items-center justify-between">
         <div>
           {eyebrow && (
-            <p className="font-mono text-[11px] uppercase tracking-wider text-circuit mb-1">{eyebrow}</p>
+            <p className="font-mono text-[11px] uppercase tracking-wider text-circuit mb-1">
+              {eyebrow}
+            </p>
           )}
           {title && <h2 className="text-sm font-semibold text-ink">{title}</h2>}
         </div>

@@ -1,37 +1,36 @@
-const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+import axios from "axios";
 
-async function request(path) {
-  let res;
-  try {
-    res = await fetch(`${API_BASE}${path}`);
-  } catch {
-    throw new Error("Could not reach the server. Is the API running?");
-  }
+// single axios instance for the whole app instead of calling axios directly
+// everywhere — makes it one place to change the base URL, headers, etc.
+const instance = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api",
+});
 
-  let body = null;
-  try {
-    body = await res.json();
-  } catch {
-    // no JSON body — fall through to status-based message below
-  }
-
-  if (!res.ok) {
-    throw new Error(body?.error || `Request failed (${res.status})`);
-  }
-  return body;
-}
+// backend replies with { success, data, message } on every route — unwrap it
+// here so the rest of the app just deals with the actual payload
+instance.interceptors.response.use(
+  (res) => res.data?.data,
+  (err) => {
+    if (!err.response) {
+      // request never reached the server
+      return Promise.reject(
+        new Error("Could not reach the server. Is the API running?"),
+      );
+    }
+    const message =
+      err.response.data?.message || `Request failed (${err.response.status})`;
+    return Promise.reject(new Error(message));
+  },
+);
 
 export const api = {
-  getDevelopers: () => request("/developers"),
-  getDeveloperProfile: (id) => request(`/developers/${id}`),
-  getDeveloperGraph: (id) => request(`/developers/${id}/graph`),
-  getMentors: (id) => request(`/developers/${id}/mentors`),
-  getRecommendations: (id) => request(`/developers/${id}/recommendations`),
+  getDevelopers: () => instance.get("/developers"),
+  getDeveloperProfile: (id) => instance.get(`/developers/${id}`),
+  getDeveloperGraph: (id) => instance.get(`/developers/${id}/graph`),
+  getMentors: (id) => instance.get(`/developers/${id}/mentors`),
+  getRecommendations: (id) => instance.get(`/developers/${id}/recommendations`),
   getShortestPath: (fromId, toId) =>
-    request(
-      `/graph/path?from=${encodeURIComponent(fromId)}&to=${encodeURIComponent(toId)}`,
-    ),
-  getSkillDetail: (name) => request(`/skills/${encodeURIComponent(name)}`),
-  getProjectDetail: (id) => request(`/projects/${encodeURIComponent(id)}`),
+    instance.get("/graph/path", { params: { from: fromId, to: toId } }),
+  getSkillDetail: (name) => instance.get(`/skills/${encodeURIComponent(name)}`),
+  getProjectDetail: (id) => instance.get(`/projects/${encodeURIComponent(id)}`),
 };

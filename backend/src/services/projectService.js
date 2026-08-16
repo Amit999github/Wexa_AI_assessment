@@ -31,8 +31,7 @@ export async function getProjectTeam(projectId) {
   }
 }
 
-/** Detail for a single project: the project itself, its team, and the skills
- *  it uses. Returns null if the project does not exist. */
+// project + its team + the skills it uses. returns null if it doesn't exist
 export async function getProjectById(projectId) {
   const session = getSession();
   try {

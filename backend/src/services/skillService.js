@@ -14,7 +14,7 @@ export async function getAllSkills() {
   }
 }
 
-/** Everyone with a given skill, most experienced first — used by the Skill detail page. */
+// everyone with a given skill, most experienced first — used by the Skill detail page
 export async function getDevelopersForSkill(skillName) {
   const session = getSession();
   try {
@@ -32,16 +32,16 @@ export async function getDevelopersForSkill(skillName) {
   }
 }
 
-/** Detail for a single skill: the skill itself, developers who have it, and
- *  projects that use it. Returns null if the skill does not exist. */
+// skill + who has it + which projects use it. returns null if it doesn't exist
 export async function getSkillByName(skillName) {
   const session = getSession();
   try {
     const skillResult = await session.executeRead((tx) =>
       tx.run(
-        `MATCH (s:Skill {name: $skillName})
-         RETURN s.name AS name, s.category AS category`,
-        { skillName },
+        `MATCH (s:Skill {name: $skillName}) RETURN s.name AS name, s.category AS category`,
+        {
+          skillName,
+        },
       ),
     );
     if (skillResult.records.length === 0) return null;
@@ -52,11 +52,7 @@ export async function getSkillByName(skillName) {
       tx.run(
         `MATCH (d:Developer)-[r:HAS_SKILL]->(s:Skill {name: $skillName})
          RETURN d.id AS id, d.name AS name, r.level AS level
-         ORDER BY CASE r.level
-           WHEN 'advanced' THEN 0
-           WHEN 'intermediate' THEN 1
-           ELSE 2
-         END`,
+         ORDER BY CASE r.level WHEN 'advanced' THEN 0 WHEN 'intermediate' THEN 1 ELSE 2 END`,
         { skillName },
       ),
     );
