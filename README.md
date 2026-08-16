@@ -134,7 +134,6 @@ Wexa_AI_assessment/
 │       └── components/      shared UI (cards, panels, graph view, state views)
 ├── docs/                    screenshots + the original assignment PDF
 ├── README.md                you are here
-└── INTERVIEW_PREP.md        CognoDB/Neo4j deep dive + likely interview questions
 ```
 
 ## Getting started
