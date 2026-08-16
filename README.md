@@ -104,13 +104,13 @@ connects, what each query does, and the reasoning behind the architecture.
 
 ## Screenshots
 
-| Explore developers                                   | Path finder                                       |
-| ---------------------------------------------------- | ------------------------------------------------- |
-| ![Explore developers](./docs/screenshot-explore.png) | ![Path finder](./docs/screenshot-path-finder.png) |
+| Explore developers                        | Path finder                        |
+| ----------------------------------------- | ---------------------------------- |
+| ![Explore developers](./docs/image-1.png) | ![Path finder](./docs/image-2.png) |
 
-| Ego network (one-hop neighbourhood)               | Skill detail                                        |
-| ------------------------------------------------- | --------------------------------------------------- |
-| ![Ego network](./docs/screenshot-ego-network.png) | ![Skill detail](./docs/screenshot-skill-detail.png) |
+| Ego network (one-hop neighbourhood) | Skill detail                        |
+| ----------------------------------- | ----------------------------------- |
+| ![Ego network](./docs/image-3.png)  | ![Skill detail](./docs/image-4.png) |
 
 The original assignment brief is included at [`docs/assignment-brief.pdf`](./docs/assignment-brief.pdf).
 
